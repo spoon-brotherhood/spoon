@@ -23,6 +23,6 @@ maven-eclipse.xml
 *.iml
 
 # Spoon
-spooned-classes/
-spooned/
+**/spooned-classes/
+**/spooned/
 doc/_jekyll/_site/

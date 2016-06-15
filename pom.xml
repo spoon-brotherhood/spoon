@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -7,14 +8,19 @@
     <version>7</version>
   </parent>
 
-  <groupId>fr.inria.gforge.spoon</groupId>
-  <artifactId>spoon-core</artifactId>
-  <packaging>jar</packaging>
-  <version>5.2.0-SNAPSHOT</version>
-  <name>Spoon Core</name>
+  <groupId>fr.inria.gforge.spoon2</groupId>
+  <artifactId>parent</artifactId>
+  <packaging>pom</packaging>
+  <version>1.0.0-SNAPSHOT</version>
+
+  <name>Spoon (Parent)</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
   <inceptionYear>2007</inceptionYear>
+
+  <modules>
+    <module>spoon</module>
+  </modules>
 
   <licenses>
     <license>
@@ -165,10 +171,25 @@
   </scm>
 
   <properties>
-    <java.src.version>1.7</java.src.version>
-    <java.test.version>1.8</java.test.version>
-    <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- Compilation -->
+    <java.src.version>1.8</java.src.version>
+    <java.test.version>1.8</java.test.version>
+
+    <!-- Provided -->
+    <ant.version>1.6.5</ant.version>
+
+    <!-- Dependencies -->
+    <eclipse.version>3.12.0.v20160516-2131</eclipse.version>
+    <jsap.version>2.1</jsap.version>
+    <log.version>1.2.17</log.version>
+    <io.version>1.3.2</io.version>
+
+    <!-- Test dependencies -->
+    <junit.version>4.11</junit.version>
+    <rules.version>1.9.0</rules.version>
+    <mockito.version>2.0.2-beta</mockito.version>
   </properties>
 
   <repositories>
@@ -196,216 +217,186 @@
     </site>
   </distributionManagement>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.eclipse.jdt</groupId>
-      <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.12.0.v20160516-2131</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.github.stefanbirkner</groupId>
-      <artifactId>system-rules</artifactId>
-      <version>1.9.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>2.0.2-beta</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.martiansoftware</groupId>
-      <artifactId>jsap</artifactId>
-      <version>2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>ant</groupId>
-      <artifactId>ant</artifactId>
-      <version>1.6.5</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>1.3.2</version>
-    </dependency>
-  </dependencies>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.eclipse.jdt</groupId>
+        <artifactId>org.eclipse.jdt.core</artifactId>
+        <version>${eclipse.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.martiansoftware</groupId>
+        <artifactId>jsap</artifactId>
+        <version>${jsap.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${log.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${io.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.github.stefanbirkner</groupId>
+        <artifactId>system-rules</artifactId>
+        <version>${rules.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>ant</groupId>
+        <artifactId>ant</artifactId>
+        <version>${ant.version}</version>
+        <scope>provided</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <defaultGoal>clean install</defaultGoal>
 
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <excludes>
-          <exclude>log4j.properties</exclude>
-        </excludes>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>false</filtering>
-        <includes>
-          <include>log4j.properties</include>
-        </includes>
-      </resource>
-    </resources>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.1</version>
+          <configuration>
+            <source>${java.src.version}</source>
+            <target>${java.src.version}</target>
+            <testSource>${java.test.version}</testSource>
+            <testTarget>${java.test.version}</testTarget>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>1.4.1</version>
+          <executions>
+            <execution>
+              <id>enforce-bytecode-version</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <rules>
+              <enforceBytecodeVersion>
+                <maxJdkVersion>${java.src.version}</maxJdkVersion>
+              </enforceBytecodeVersion>
+            </rules>
+            <fail>true</fail>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>extra-enforcer-rules</artifactId>
+              <version>1.0-beta-4</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.7</version>
+          <dependencies>
+            <dependency>
+              <groupId>sun.jdk</groupId>
+              <artifactId>tools</artifactId>
+              <version>${java.src.version}.0</version>
+              <scope>system</scope>
+              <systemPath>${java.home}/../lib/tools.jar</systemPath>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <phase>test</phase>
+              <goals>
+                <goal>run</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>animal-sniffer-maven-plugin</artifactId>
+          <version>1.14</version>
+          <configuration>
+            <signature>
+              <groupId>org.codehaus.mojo.signature</groupId>
+              <artifactId>java17</artifactId>
+              <version>1.0</version>
+            </signature>
+          </configuration>
+          <executions>
+            <execution>
+              <id>ensure-java-1.7-class-library</id>
+              <phase>test</phase>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>2.11</version>
+          <configuration>
+            <header>../LICENSE-short.txt</header>
+            <excludes>
+              <exclude>**/README</exclude>
+              <exclude>**/*.yml</exclude>
+              <exclude>*.xml</exclude>
+              <exclude>*.txt</exclude>
+              <exclude>*.md</exclude>
+              <exclude>doc/**</exclude>
+              <exclude>spooned/**</exclude>
+              <exclude>src/main/resources/**</exclude>
+              <exclude>src/test/**</exclude>
+              <exclude>**/target/**</exclude>
+              <exclude>bin/**</exclude>
+              <exclude>build/**</exclude>
+            </excludes>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
 
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <source>${java.src.version}</source>
-          <target>${java.src.version}</target>
-          <testSource>${java.test.version}</testSource>
-          <testTarget>${java.test.version}</testTarget>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.4.1</version>
-        <executions>
-          <execution>
-            <id>enforce-bytecode-version</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <rules>
-            <enforceBytecodeVersion>
-              <maxJdkVersion>${java.src.version}</maxJdkVersion>
-            </enforceBytecodeVersion>
-          </rules>
-          <fail>true</fail>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.0-beta-4</version>
-          </dependency>
-        </dependencies>
-      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
         <version>2.8.1</version>
-      </plugin>
-
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.2</version>
-        <extensions>true</extensions>
-        <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.5</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>spoon.Launcher</mainClass>
-              <addClasspath>true</addClasspath>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
-        <dependencies>
-          <dependency>
-            <groupId>sun.jdk</groupId>
-            <artifactId>tools</artifactId>
-            <version>${java.src.version}.0</version>
-            <scope>system</scope>
-            <systemPath>${java.home}/../lib/tools.jar</systemPath>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <phase>test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.8</version>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/</outputDirectory>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>false</overWriteSnapshots>
-              <overWriteIfNewer>true</overWriteIfNewer>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <archive>
-            <manifest>
-                <mainClass>spoon.Launcher</mainClass>
-            </manifest>
-          </archive>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-            <!-- descriptorRef>project</descriptorRef -->
-          </descriptorRefs>
-          <!-- descriptor>src/main/assembly/project.xml</descriptor -->
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id><!-- this is used for inheritance merges -->
-            <phase>package</phase><!-- append to the packaging phase. -->
-            <goals>
-              <goal>attached</goal><!-- goals == mojos -->
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
@@ -418,6 +409,34 @@
           <releaseProfiles>release</releaseProfiles>
           <goals>deploy</goals>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
@@ -438,51 +457,29 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
 
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings
-          only. It has no influence on the Maven build itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>
-                      org.apache.maven.plugins
-                    </groupId>
-                    <artifactId>
-                      maven-dependency-plugin
-                    </artifactId>
-                    <versionRange>
-                      [2.8,)
-                    </versionRange>
-                    <goals>
-                      <goal>
-                        copy-dependencies
-                      </goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore />
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <excludes>
+          <exclude>log4j.properties</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>log4j.properties</include>
+        </includes>
+      </resource>
+    </resources>
+
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
-         <artifactId>wagon-ssh</artifactId>
+        <artifactId>wagon-ssh</artifactId>
       </extension>
     </extensions>
   </build>
@@ -536,69 +533,6 @@
 
   <profiles>
     <profile>
-      <id>animal-sniffer</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>animal-sniffer-maven-plugin</artifactId>
-            <version>1.14</version>
-            <configuration>
-              <signature>
-                <groupId>org.codehaus.mojo.signature</groupId>
-                <artifactId>java17</artifactId>
-                <version>1.0</version>
-              </signature>
-            </configuration>
-            <executions>
-              <execution>
-                <id>ensure-java-1.7-class-library</id>
-                <phase>test</phase>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>com.mycila</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <version>2.11</version>
-            <configuration>
-              <header>LICENSE-short.txt</header>
-              <excludes>
-                <exclude>**/README</exclude>
-                <exclude>**/*.yml</exclude>
-                <exclude>*.xml</exclude>
-                <exclude>*.txt</exclude>
-                <exclude>*.md</exclude>
-                <exclude>doc/**</exclude>
-                <exclude>spooned/**</exclude>
-                <exclude>src/main/resources/**</exclude>
-                <exclude>src/main/assembly/**</exclude>
-                <exclude>src/test/**</exclude>
-                <exclude>src/changes/**</exclude>
-                <exclude>src/site/**</exclude>
-                <exclude>target/**</exclude>
-                <exclude>bin/**</exclude>
-                <exclude>build/**</exclude>
-              </excludes>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
       <id>coveralls</id>
       <build>
         <plugins>
@@ -633,34 +567,6 @@
       <id>release</id>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <version>2.3</version>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <goals>
-                  <goal>jar-no-fork</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.9.1</version>
-            <executions>
-              <execution>
-                <id>attach-javadocs</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
