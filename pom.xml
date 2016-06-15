@@ -20,6 +20,7 @@
 
   <modules>
     <module>spoon</module>
+    <module>spoon-generator</module>
   </modules>
 
   <licenses>
@@ -447,10 +448,11 @@
           <failsOnError>true</failsOnError>
           <configLocation>checkstyle.xml</configLocation>
           <consoleOutput>true</consoleOutput>
+          <excludes>**/target/generated-sources/**</excludes>
         </configuration>
         <executions>
           <execution>
-            <phase>verify</phase>
+            <phase>validate</phase>
             <goals>
               <goal>checkstyle</goal>
             </goals>

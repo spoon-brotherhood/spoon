@@ -16,6 +16,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>${parent.groupId}</groupId>
+      <artifactId>spoon-generator</artifactId>
+      <version>${parent.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
     </dependency>
@@ -66,6 +72,27 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>fr.inria.gforge.spoon</groupId>
+        <artifactId>spoon-maven-plugin</artifactId>
+        <version>2.2</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>${parent.groupId}</groupId>
+            <artifactId>spoon</artifactId>
+            <version>${parent.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
