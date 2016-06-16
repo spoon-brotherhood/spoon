@@ -19,8 +19,8 @@
   <inceptionYear>2007</inceptionYear>
 
   <modules>
-    <module>spoon</module>
     <module>spoon-generator</module>
+    <module>spoon</module>
   </modules>
 
   <licenses>
@@ -51,119 +51,6 @@
     </mailingList>
   </mailingLists>
 
-  <!-- to generate the list for the README -->
-  <!-- xmlstarlet sel -t -m "//_:developer/_:name" -o "* " -v . -n  pom.xml -->
-  <developers>
-    <developer>
-      <name>Olivier Barais</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>David Bernard</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Benoit Cornu</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Didier Donsez</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Favio DeMarco</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Christophe Dufour</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Sebastian Lamelas Marcote</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Matias Martinez</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Martin Monperrus</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Carlos Noguera</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Renaud Pawlak</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Nicolas Pessemier</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Nicolas Petitprez</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Phillip Schichtel</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Lionel Seinturier</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Stefan Wolf</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Gérard Paligot</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Alcides Fonseca</name>
-      <roles>
-        <role>Contributor</role>
-      </roles>
-    </developer>
-  </developers>
-
   <scm>
     <url>https://gforge.inria.fr/scm/viewvc.php/?root=spoon</url>
     <connection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</connection>
@@ -175,22 +62,31 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- Compilation -->
-    <java.src.version>1.8</java.src.version>
+    <java.src.version>1.7</java.src.version>
     <java.test.version>1.8</java.test.version>
 
     <!-- Provided -->
     <ant.version>1.6.5</ant.version>
 
     <!-- Dependencies -->
+    <spoon.last.version>5.1.1</spoon.last.version>
     <eclipse.version>3.12.0.v20160516-2131</eclipse.version>
     <jsap.version>2.1</jsap.version>
     <log.version>1.2.17</log.version>
-    <io.version>1.3.2</io.version>
+    <io.version>2.4</io.version>
+    <maven.core.version>3.2.2</maven.core.version>
+    <maven.project.version>2.2.1</maven.project.version>
+    <maven.plugin.api.version>3.2.2</maven.plugin.api.version>
+    <maven.plugin.annotations.version>3.3</maven.plugin.annotations.version>
+    <jaxb.version>2.2.11</jaxb.version>
 
     <!-- Test dependencies -->
     <junit.version>4.11</junit.version>
     <rules.version>1.9.0</rules.version>
     <mockito.version>2.0.2-beta</mockito.version>
+    <assertj.core.version>1.6.1</assertj.core.version>
+    <maven.compat.version>3.2.2</maven.compat.version>
+    <maven.plugin.harness.version>3.2.0</maven.plugin.harness.version>
   </properties>
 
   <repositories>
@@ -240,6 +136,32 @@
         <artifactId>commons-io</artifactId>
         <version>${io.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${maven.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-project</artifactId>
+        <version>${maven.project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-plugin-api</artifactId>
+        <version>${maven.plugin.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.plugin-tools</groupId>
+        <artifactId>maven-plugin-annotations</artifactId>
+        <version>${maven.plugin.annotations.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${jaxb.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>junit</groupId>
@@ -257,6 +179,24 @@
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
         <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-compat</artifactId>
+        <version>${maven.compat.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.plugin-testing</groupId>
+        <artifactId>maven-plugin-testing-harness</artifactId>
+        <version>${maven.plugin.harness.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertj.core.version}</version>
         <scope>test</scope>
       </dependency>
 
@@ -386,6 +326,31 @@
               <goals>
                 <goal>check</goal>
               </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>3.2</version>
+          <configuration>
+            <goalPrefix>spoon</goalPrefix>
+          </configuration>
+          <executions>
+            <execution>
+              <id>default-descriptor</id>
+              <goals>
+                <goal>descriptor</goal>
+              </goals>
+              <phase>process-classes</phase>
+            </execution>
+            <execution>
+              <id>help-descriptor</id>
+              <goals>
+                <goal>helpmojo</goal>
+              </goals>
+              <phase>process-classes</phase>
             </execution>
           </executions>
         </plugin>
@@ -587,4 +552,117 @@
       </build>
     </profile>
   </profiles>
+
+  <!-- to generate the list for the README -->
+  <!-- xmlstarlet sel -t -m "//_:developer/_:name" -o "* " -v . -n  pom.xml -->
+  <developers>
+    <developer>
+      <name>Olivier Barais</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>David Bernard</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Benoit Cornu</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Didier Donsez</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Favio DeMarco</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Christophe Dufour</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Sebastian Lamelas Marcote</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Matias Martinez</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Martin Monperrus</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Carlos Noguera</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Renaud Pawlak</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Nicolas Pessemier</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Nicolas Petitprez</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Phillip Schichtel</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Lionel Seinturier</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Stefan Wolf</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Gérard Paligot</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Alcides Fonseca</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+  </developers>
 </project>

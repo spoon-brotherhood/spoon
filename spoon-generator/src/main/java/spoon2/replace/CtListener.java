@@ -14,10 +14,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating.replace;
+package spoon2.replace;
 
 import spoon.reflect.declaration.CtElement;
 
-public interface ReplaceListener<T extends CtElement> {
-	void set(T replace);
+class CtListener implements ReplaceListener<CtElement> {
+	private CtElement element;
+
+	CtListener(CtElement element) {
+		this.element = element;
+	}
+
+	@Override
+	public void set(CtElement replace) {
+	}
 }

@@ -40,7 +40,6 @@ import spoon.support.visitor.HashcodeVisitor;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
 import spoon.support.visitor.equals.EqualsVisitor;
-import spoon.support.visitor.replace.ReplacementVisitor;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -382,7 +381,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public void replace(CtElement element) {
-		ReplacementVisitor.replace(this, element);
+		spoon.support.visitor.replace.ReplacementVisitor.replace(this, element);
 	}
 
 	@Override

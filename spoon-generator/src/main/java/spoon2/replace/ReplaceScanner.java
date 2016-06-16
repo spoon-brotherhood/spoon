@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating.replace;
+package spoon2.replace;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
@@ -44,9 +44,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class ReplaceScanner extends CtScanner {
-	public static final String TARGET_REPLACE_PACKAGE = "spoon.support.visitor.replace";
-	public static final String GENERATING_REPLACE_PACKAGE = "spoon.generating.replace";
-	public static final String GENERATING_REPLACE_VISITOR = GENERATING_REPLACE_PACKAGE + ".ReplacementVisitor";
+	static final String TARGET_REPLACE_PACKAGE = "spoon.support.visitor.replace";
+	private static final String GENERATING_REPLACE_PACKAGE = "spoon2.replace";
+	static final String GENERATING_REPLACE_VISITOR = GENERATING_REPLACE_PACKAGE + ".ReplacementVisitor";
 
 	private final List<String> excludes = Collections.singletonList("spoon.reflect.code.CtLiteral#getValue()");
 	private final Map<String, CtClass> listeners = new HashMap<>();
@@ -71,7 +71,7 @@ public class ReplaceScanner extends CtScanner {
 		}
 
 		Factory factory = element.getFactory();
-		CtMethod<T> clone = element.clone();
+		CtMethod<T> clone = factory.Core().clone(element);
 		clone.getBody().getStatements().clear();
 		for (int i = 1; i < element.getBody().getStatements().size() - 1; i++) {
 			CtInvocation inv = element.getBody().getStatement(i);
@@ -129,7 +129,7 @@ public class ReplaceScanner extends CtScanner {
 		if (type instanceof CtTypeParameterReference) {
 			getterType = getTypeFromTypeParameterReference((CtTypeParameterReference) getter.getExecutable().getDeclaration().getType());
 		} else {
-			getterType = type.clone();
+			getterType = factory.Core().clone(type);
 		}
 		getterType.getActualTypeArguments().clear();
 		return getterType;
@@ -153,7 +153,7 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtClass createListenerClass(Factory factory, String listenerName, CtTypeReference getterType, Type type) {
 		CtClass listener;
-		listener = factory.Class().get(GENERATING_REPLACE_PACKAGE + ".CtListener").clone();
+		listener = factory.Core().clone(factory.Class().get(GENERATING_REPLACE_PACKAGE + ".CtListener"));
 		listener.setSimpleName(listenerName);
 		target.addNestedType(listener);
 		final List<CtTypeReference> references = listener.getReferences(new ReferenceFilter<CtTypeReference>() {

@@ -16,12 +16,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>${parent.groupId}</groupId>
-      <artifactId>spoon-generator</artifactId>
-      <version>${parent.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
     </dependency>
@@ -86,11 +80,37 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <noClasspath>true</noClasspath>
+          <processors>
+            <processor>spoon2.replace.ReplacementVisitorGenerator</processor>
+          </processors>
+          <srcFolders>
+            <srcFolder>src/main/java</srcFolder>
+            <srcFolder>../spoon-generator/src/main/java</srcFolder>
+          </srcFolders>
+        </configuration>
         <dependencies>
           <dependency>
-            <groupId>${parent.groupId}</groupId>
-            <artifactId>spoon</artifactId>
-            <version>${parent.version}</version>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-tools-api</artifactId>
+            <version>3.4</version>
+            <exclusions>
+              <exclusion>
+                <groupId>fr.inria.gforge.spoon</groupId>
+                <artifactId>spoon-core</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>spoon-generator</artifactId>
+            <version>${project.parent.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>fr.inria.gforge.spoon</groupId>
+            <artifactId>spoon-core</artifactId>
+            <version>${spoon.last.version}</version>
           </dependency>
         </dependencies>
       </plugin>

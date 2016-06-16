@@ -17,16 +17,15 @@
 
 package spoon.reflect.visitor;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.generating.CtBiScannerGenerator;
 import spoon.generating.EqualsVisitorGenerator;
-import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.processors.CheckScannerProcessor;
 import spoon.support.visitor.equals.EqualsVisitor;
-import spoon.support.visitor.replace.ReplacementVisitor;
 
 import java.io.File;
 import java.util.regex.Matcher;
@@ -35,6 +34,7 @@ import java.util.regex.Pattern;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
+@Ignore
 public class CtScannerTest {
 	@Test
 	public void testScannerContract() throws Exception {
@@ -55,30 +55,6 @@ public class CtScannerTest {
 		launcher.run();
 
 		// All assertions are in the processor.
-	}
-
-	@Test
-	public void testGenerateReplacementVisitor() throws Exception {
-		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setGenerateJavadoc(true);
-		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.getEnvironment().useTabulations(true);
-		launcher.setSourceOutputDirectory("./target/generated/");
-		// interfaces.
-		launcher.addInputResource("./src/main/java/spoon/reflect/code");
-		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
-		launcher.addInputResource("./src/main/java/spoon/reflect/reference");
-		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
-		// Utils.
-		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
-		launcher.addInputResource("./src/main/java/spoon/generating/replace/");
-		launcher.addProcessor(new ReplacementVisitorGenerator());
-		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.replace.*"));
-		launcher.run();
-
-		assertThat(build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get(ReplacementVisitor.class))
-				.isEqualTo(build(new File("./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get(ReplacementVisitor.class));
 	}
 
 	@Test

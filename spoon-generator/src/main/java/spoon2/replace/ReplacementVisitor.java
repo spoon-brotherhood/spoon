@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating.replace;
+package spoon2.replace;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
@@ -30,7 +30,7 @@ import java.util.Set;
 /**
  * Used to replace an element by another one.
  *
- * This class is generated automatically by the processor {@link spoon.generating.ReplacementVisitorGenerator}.
+ * This class is generated automatically by the processor ReplacementVisitorGenerator.
  */
 class ReplacementVisitor extends CtScanner {
 	public static void replace(CtElement original, CtElement replace) {

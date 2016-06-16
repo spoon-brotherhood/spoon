@@ -14,9 +14,8 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating;
+package spoon2.replace;
 
-import spoon.generating.replace.ReplaceScanner;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
@@ -28,8 +27,8 @@ import spoon.reflect.visitor.ReferenceFilter;
 
 import java.util.List;
 
-import static spoon.generating.replace.ReplaceScanner.GENERATING_REPLACE_VISITOR;
-import static spoon.generating.replace.ReplaceScanner.TARGET_REPLACE_PACKAGE;
+import static spoon2.replace.ReplaceScanner.GENERATING_REPLACE_VISITOR;
+import static spoon2.replace.ReplaceScanner.TARGET_REPLACE_PACKAGE;
 
 public class ReplacementVisitorGenerator extends AbstractProcessor<CtType<?>> {
 	@Override
