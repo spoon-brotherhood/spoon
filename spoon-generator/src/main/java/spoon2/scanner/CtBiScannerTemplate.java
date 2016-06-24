@@ -14,31 +14,17 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating.equals;
-
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.CtBiScannerDefault;
-import spoon.support.visitor.equals.EqualsChecker;
+package spoon2.scanner;
 
 /**
- * Used to check equality between an element and another one.
+ * This visitor implements a deep-search scan on the model for 2 elements.
  *
- * This class is generated automatically by the processor {@link spoon.generating.EqualsVisitorGenerator}.
+ * Ensures that all children nodes are visited once, a visit means three method
+ * calls, one call to "enter", one call to "exit" and one call to biScan.
+ *
+ * This class is generated automatically.
+ *
+ * Is used by EqualsVisitor.
  */
-class EqualsVisitorTemplate extends CtBiScannerDefault {
-	public static boolean equals(CtElement element, CtElement other) {
-		return !new EqualsVisitorTemplate().biScan(element, other);
-	}
-
-	private final EqualsChecker checker = new EqualsChecker();
-
-	@Override
-	protected void enter(CtElement e) {
-		super.enter(e);
-		checker.setOther(stack.peek());
-		checker.scan(e);
-		if (checker.isNotEqual()) {
-			fail();
-		}
-	}
+abstract class CtBiScannerTemplate extends CtAbstractBiScanner {
 }

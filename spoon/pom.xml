@@ -84,6 +84,8 @@
           <noClasspath>true</noClasspath>
           <processors>
             <processor>spoon2.replace.ReplacementVisitorGenerator</processor>
+            <processor>spoon2.scanner.CtBiScannerGenerator</processor>
+            <processor>spoon2.equals.EqualsVisitorGenerator</processor>
           </processors>
           <srcFolders>
             <srcFolder>src/main/java</srcFolder>

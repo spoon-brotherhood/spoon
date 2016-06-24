@@ -14,19 +14,14 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating.scanner;
+package spoon2.equals;
 
-import spoon.reflect.visitor.CtAbstractBiScanner;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * This visitor implements a deep-search scan on the model for 2 elements.
- *
- * Ensures that all children nodes are visited once, a visit means three method
- * calls, one call to "enter", one call to "exit" and one call to biScan.
- *
- * This class is generated automatically by the processor {@link spoon.generating.CtBiScannerGenerator}.
- *
- * Is used by EqualsVisitor.
- */
-abstract class CtBiScannerTemplate extends CtAbstractBiScanner {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD })
+public @interface IgnoredByEquals {
 }

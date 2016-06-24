@@ -14,9 +14,10 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor;
+package spoon2.scanner;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.CtVisitor;
 
 import java.util.ArrayDeque;
 import java.util.Collection;

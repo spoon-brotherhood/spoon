@@ -14,14 +14,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.visitor.equals;
+package spoon2.scanner;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import spoon.reflect.declaration.CtElement;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD })
-public @interface IgnoredByEquals {
+import java.util.Deque;
+
+class PeekElementTemplate {
+	Deque<CtElement> stack;
+	public void statement() {
+		CtElement other = stack.peek();
+	}
 }

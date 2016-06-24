@@ -14,15 +14,30 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating.scanner;
+package spoon2.equals;
 
 import spoon.reflect.declaration.CtElement;
+import spoon2.scanner.CtAbstractBiScanner;
 
-import java.util.Deque;
+/**
+ * Used to check equality between an element and another one.
+ *
+ * This class is generated automatically.
+ */
+abstract class EqualsVisitorTemplate extends CtAbstractBiScanner {
+	public static boolean equals(CtElement element, CtElement other) {
+		return false; // !new EqualsVisitorTemplate().biScan(element, other);
+	}
 
-class PeekElementTemplate {
-	Deque<CtElement> stack;
-	public void statement() {
-		CtElement other = stack.peek();
+	private final EqualsChecker checker = new EqualsChecker();
+
+	@Override
+	protected void enter(CtElement e) {
+		super.enter(e);
+		checker.setOther(stack.peek());
+		checker.scan(e);
+		if (checker.isNotEqual()) {
+			fail();
+		}
 	}
 }

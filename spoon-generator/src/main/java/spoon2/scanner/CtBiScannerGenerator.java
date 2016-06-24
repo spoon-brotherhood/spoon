@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating;
+package spoon2.scanner;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtExpression;
@@ -29,13 +29,12 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.ReferenceFilter;
 
-import java.util.List;
+import static spoon2.RefactoringHelper.renameReferences;
 
 public class CtBiScannerGenerator extends AbstractProcessor<CtType<?>> {
 	private static final String TARGET_BISCANNER_PACKAGE = "spoon.reflect.visitor";
-	private static final String GENERATING_BISCANNER_PACKAGE = "spoon.generating.scanner";
+	private static final String GENERATING_BISCANNER_PACKAGE = "spoon2.scanner";
 	private static final String GENERATING_BISCANNER = GENERATING_BISCANNER_PACKAGE + ".CtBiScannerTemplate";
 
 	@Override
@@ -50,6 +49,10 @@ public class CtBiScannerGenerator extends AbstractProcessor<CtType<?>> {
 				.getMethod("statement")
 				.getBody().getStatement(0);
 		final CtClass<Object> target = createBiScanner();
+		final CtType<?> superClass = target.getSuperclass().getDeclaration();
+		target.getPackage().addType(superClass);
+		renameReferences(target, target.getSuperclass().getSimpleName(), target.getPackage().getReference(), GENERATING_BISCANNER_PACKAGE + "." + target.getSuperclass().getSimpleName());
+		renameReferences(superClass, target.getSuperclass().getSimpleName(), target.getPackage().getReference(), GENERATING_BISCANNER_PACKAGE + "." + target.getSuperclass().getSimpleName());
 
 		new CtScanner() {
 			@Override
@@ -104,21 +107,7 @@ public class CtBiScannerGenerator extends AbstractProcessor<CtType<?>> {
 		target.setSimpleName("CtBiScannerDefault");
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
-		final List<CtTypeReference> references = target.getReferences(new ReferenceFilter<CtTypeReference>() {
-			@Override
-			public boolean matches(CtTypeReference reference) {
-				return reference != null && GENERATING_BISCANNER.equals(reference.getQualifiedName());
-			}
-
-			@Override
-			public Class<CtTypeReference> getType() {
-				return CtTypeReference.class;
-			}
-		});
-		for (CtTypeReference reference : references) {
-			reference.setSimpleName("CtBiScannerDefault");
-			reference.setPackage(aPackage.getReference());
-		}
+		renameReferences(target, target.getSimpleName(), aPackage.getReference(), GENERATING_BISCANNER);
 		return target;
 	}
 }
