@@ -121,6 +121,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * A visitor for generating Java code from the program compile-time model.
@@ -299,7 +300,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			a.accept(this);
 		}
 
-		if (!context.currentTopLevel.getPackage().getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+		if (!context.currentTopLevel.getPackage().isUnnamedPackage()) {
 			write("package " + context.currentTopLevel.getPackage().getQualifiedName() + ";");
 		}
 		String ret = sbf.toString();
@@ -516,7 +517,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (!removeLine()) {
 					if (line > e.getPosition().getEndLine()) {
 						env.report(null, Level.WARN, e,
-								"cannot adjust position of " + e.getClass().getSimpleName() + " '" + e.getSignature() + "' " + " to match lines: " + line + " > [" + e.getPosition().getLine() + ", "
+								"cannot adjust position of " + e.getClass().getSimpleName() + " '" + e.getShortRepresentation() + "' " + " to match lines: " + line + " > [" + e.getPosition().getLine() + ", "
 										+ e.getPosition().getEndLine() + "]");
 					}
 					break;
@@ -564,9 +565,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		writeAnnotations(annotation);
 		write("@");
 		scan(annotation.getAnnotationType());
-		if (annotation.getElementValues().size() > 0) {
+		if (annotation.getValues().size() > 0) {
 			write("(");
-			for (Entry<String, Object> e : annotation.getElementValues().entrySet()) {
+			for (Entry<String, CtExpression> e : annotation.getValues().entrySet()) {
 				write(e.getKey() + " = ");
 				writeAnnotationElement(annotation.getFactory(), e.getValue());
 				write(", ");
@@ -788,8 +789,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		lst.addAll(ctClass.getMethods());
 		lst.addAll(getComments(ctClass, CommentOffset.INSIDE));
 
-		if ((ctClass.getSimpleName() == null || ctClass.getSimpleName().isEmpty()) && ctClass.getParent() != null && ctClass.getParent() instanceof CtNewClass) {
-			context.currentThis.push(((CtNewClass<?>) ctClass.getParent()).getType());
+		CtElement parent;
+		try {
+			parent = ctClass.getParent();
+		} catch (ParentNotInitializedException e) {
+			parent = null;
+		}
+		if ((ctClass.getSimpleName() == null || ctClass.getSimpleName().isEmpty()) && parent != null && parent instanceof CtNewClass) {
+			context.currentThis.push(((CtNewClass<?>) parent).getType());
 		} else {
 			context.currentThis.push(ctClass.getReference());
 		}
@@ -1043,9 +1050,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Check if the target expression is a static final field initialized in a static anonymous block.
 	 */
 	private <T> boolean isInitializeStaticFinalField(CtExpression<T> targetExp) {
-		final CtElement parent = targetExp.getParent();
-		if (parent instanceof CtFieldWrite && targetExp.equals(((CtFieldWrite) parent).getTarget())
-				&& targetExp.getParent(CtAnonymousExecutable.class) != null
+		final CtElement parent;
+		final CtAnonymousExecutable anonymousParent;
+		try {
+			parent = targetExp.getParent();
+			anonymousParent = targetExp.getParent(CtAnonymousExecutable.class);
+		} catch (ParentNotInitializedException e) {
+			return false;
+		}
+		if (parent instanceof CtFieldWrite
+				&& targetExp.equals(((CtFieldWrite) parent).getTarget())
+				&& anonymousParent != null
 				&& ((CtFieldWrite) parent).getVariable() != null
 				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.STATIC)) {
 			return true;
@@ -1078,19 +1093,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Check if the this access expression is a target of a private final field in a constructor.
 	 */
 	private <T> boolean tryToInitializeFinalFieldInConstructor(CtThisAccess<T> thisAccess) {
-		final CtElement parent = thisAccess.getParent();
-		if (!(parent instanceof CtFieldWrite) || !thisAccess.equals(((CtFieldWrite) parent).getTarget()) || thisAccess.getParent(CtConstructor.class) == null) {
+		try {
+			final CtElement parent = thisAccess.getParent();
+			if (!(parent instanceof CtFieldWrite) || !thisAccess.equals(((CtFieldWrite) parent).getTarget()) || thisAccess.getParent(CtConstructor.class) == null) {
+				return false;
+			}
+			final CtFieldReference variable = ((CtFieldWrite) parent).getVariable();
+			if (variable == null) {
+				return false;
+			}
+			final CtField declaration = variable.getDeclaration();
+			if (declaration == null) {
+				return true;
+			}
+			return variable.getDeclaration().getModifiers().contains(ModifierKind.FINAL);
+		} catch (ParentNotInitializedException e) {
 			return false;
 		}
-		final CtFieldReference variable = ((CtFieldWrite) parent).getVariable();
-		if (variable == null) {
-			return false;
-		}
-		final CtField declaration = variable.getDeclaration();
-		if (declaration == null) {
-			return true;
-		}
-		return variable.getDeclaration().getModifiers().contains(ModifierKind.FINAL);
 	}
 
 	@Override
@@ -1107,7 +1126,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtComment(CtComment comment) {
-		if (!env.isGenerateJavadoc() && !env.isCommentsEnabled() && context.elementStack.size() > 1) {
+		if (!env.isCommentsEnabled() && context.elementStack.size() > 1) {
 			return;
 		}
 		switch (comment.getCommentType()) {
@@ -1352,7 +1371,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (invocation.getExecutable().isConstructor()) {
 			// It's a constructor (super or this)
 			writeActualTypeArguments(invocation.getExecutable());
-			CtType<?> parentType = invocation.getParent(CtType.class);
+			CtType<?> parentType;
+			try {
+				parentType = invocation.getParent(CtType.class);
+			} catch (ParentNotInitializedException e) {
+				parentType = null;
+			}
 			if (parentType != null && parentType.getQualifiedName() != null && parentType.getQualifiedName().equals(invocation.getExecutable().getDeclaringType().getQualifiedName())) {
 				write("this");
 			} else {
@@ -1589,7 +1613,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void printComment(CtComment comment) {
-		if (!env.isGenerateJavadoc() || !env.isCommentsEnabled() || comment == null) {
+		if (!env.isCommentsEnabled() || comment == null) {
 			return;
 		}
 		scan(comment);
@@ -1597,7 +1621,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void printComment(List<CtComment> comments) {
-		if (!env.isGenerateJavadoc() || !env.isCommentsEnabled() || comments == null) {
+		if (!env.isCommentsEnabled() || comments == null) {
 			return;
 		}
 		for (CtComment comment : comments) {
@@ -1618,7 +1642,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private List<CtComment> getComments(CtElement e, CommentOffset offset) {
 		List<CtComment> commentsToPrint = new ArrayList<>();
-		if (!env.isGenerateJavadoc() || !env.isCommentsEnabled() || e == null) {
+		if (!env.isCommentsEnabled() || e == null) {
 			return commentsToPrint;
 		}
 		for (CtComment comment : e.getComments()) {
@@ -1713,7 +1737,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		enterCtExpression(newArray);
 
-		if ((newArray.getParent(CtAnnotationType.class) == null) && (newArray.getParent(CtAnnotation.class) == null)) {
+		boolean isNotInAnnotation;
+		try {
+			isNotInAnnotation = (newArray.getParent(CtAnnotationType.class) == null) && (newArray.getParent(CtAnnotation.class) == null);
+		} catch (ParentNotInitializedException e) {
+			isNotInAnnotation = true;
+		}
+
+		if (isNotInAnnotation) {
 			CtTypeReference<?> ref = newArray.getType();
 
 			if (ref != null) {
@@ -1886,7 +1917,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public void visitCtPackage(CtPackage ctPackage) {
-		if (!ctPackage.getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+		if (!ctPackage.isUnnamedPackage()) {
 			write("package " + ctPackage.getQualifiedName() + ";");
 		} else {
 			write("// default package (CtPackage.TOP_LEVEL_PACKAGE_NAME in Spoon= unnamed package)\n");
@@ -2012,10 +2043,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return;
 		}
 		writeAnnotations(ref);
-		if (importsContext.isImported(ref)) {
-			write(ref.getSimpleName());
-		} else {
+		if (printQualified(ref)) {
 			write(ref.getQualifiedName());
+		} else {
+			write(ref.getSimpleName());
 		}
 		if ((!context.isInvocation || "?".equals(ref.getSimpleName())) && ref.getBoundingType() != null) {
 			if (ref.isUpper()) {
@@ -2024,6 +2055,22 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(" super ");
 			}
 			scan(ref.getBoundingType());
+		}
+	}
+
+	private boolean printQualified(CtTypeReference<?> ref) {
+		if (importsContext.isImported(ref)) {
+			// If my.pkg.Something is imported, but we are in the context of a class which is
+			// also called "Something", we should still use qualified version my.pkg.Something
+			for (CtTypeReference<?> enclosingClassRef : context.currentThis) {
+				if (enclosingClassRef.getSimpleName().equals(ref.getSimpleName())
+						&& !Objects.equals(enclosingClassRef.getPackage(), ref.getPackage())) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -2047,6 +2094,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
+		if (typeAccess.isImplicit()) {
+			return;
+		}
 		enterCtExpression(typeAccess);
 		scan(typeAccess.getAccessedType());
 		exitCtExpression(typeAccess);
@@ -2085,8 +2135,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(ref.getSimpleName());
 			}
 		} else {
-			if (ref.getPackage() != null && !importsContext.isImported(ref)) {
-				if (!CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(ref.getPackage().getSimpleName())) {
+			if (ref.getPackage() != null && printQualified(ref)) {
+				if (!ref.getPackage().isUnnamedPackage()) {
 					scan(ref.getPackage()).write(CtPackage.PACKAGE_SEPARATOR);
 				}
 			}

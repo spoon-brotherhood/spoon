@@ -37,13 +37,13 @@ import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.EqualVisitor;
 import spoon.support.visitor.HashcodeVisitor;
-import spoon.support.visitor.SignaturePrinter;
+import spoon.support.visitor.ShortRepresentationPrinter;
 import spoon.support.visitor.TypeReferenceScanner;
+import spoon.support.visitor.equals.CloneHelper;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -75,31 +75,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		return list.isEmpty() ? Collections.<T>emptyList() : Collections.unmodifiableList(list);
 	}
 
-	/**
-	 * Returns an empty collection.
-	 * @param <T> type of elements
-	 * @return an empty collection
-	 * @deprecated use {@link #emptyList()} or {@link #emptySet()} instead
-	 */
-	@Deprecated
-	public static <T> Collection<T> emptyCollection() {
-		return emptyList();
-	}
-
-	public String getSignature() {
-		SignaturePrinter pr = new SignaturePrinter();
-		pr.scan(this);
-		String sig = pr.getSignature();
-
-		// we have a signature return it
-		if (sig.length() > 0) {
-			return sig;
-		}
-
-		// else fallback to backward compatibility
-		return getDeepRepresentation(this);
-	}
-
 	transient Factory factory;
 
 	protected CtElement parent;
@@ -120,6 +95,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	 * based on the deep representation
 	 * which is also used in {@link #equals(Object)}.
 	 */
+	@Override
 	public int compareTo(CtElement o) {
 		String current = getDeepRepresentation(this);
 		String other = getDeepRepresentation(o);
@@ -127,6 +103,13 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 			throw new ClassCastException("Unable to compare elements");
 		}
 		return current.compareTo(other);
+	}
+
+	@Override
+	public String getShortRepresentation() {
+		final ShortRepresentationPrinter printer = new ShortRepresentationPrinter();
+		printer.scan(this);
+		return printer.getShortRepresentation();
 	}
 
 	private String getDeepRepresentation(CtElement elem) {
@@ -196,6 +179,10 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
+		if (annotations == null || annotations.isEmpty()) {
+			this.annotations = CtElementImpl.emptyList();
+			return (E) this;
+		}
 		this.annotations.clear();
 		for (CtAnnotation<? extends Annotation> annot : annotations) {
 			addAnnotation(annot);
@@ -258,6 +245,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 			printer.computeImports(this);
 			printer.scan(this);
 		} catch (ParentNotInitializedException ignore) {
+			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
 			errorMessage = ERROR_MESSAGE_TO_STRING;
 		}
 		return printer.toString() + errorMessage;
@@ -434,6 +422,10 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public <E extends CtElement> E setComments(List<CtComment> comments) {
+		if (comments == null || comments.isEmpty()) {
+			this.comments = CtElementImpl.emptyList();
+			return (E) this;
+		}
 		this.comments.clear();
 		for (CtComment comment : comments) {
 			addComment(comment);
@@ -443,6 +435,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public CtElement clone() {
-		return getFactory().Core().clone(this);
+		return CloneHelper.clone(this);
 	}
 }

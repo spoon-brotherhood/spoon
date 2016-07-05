@@ -80,16 +80,10 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 	 */
 	String getDocComment();
 
-
 	/**
-	 * Gets the signature of the element.
-	 * Has been introduced for CtMethod, see chapter "8.4.2 Method Signature" of the Java specification.
-	 * Overtime, has been badly exploited.
-	 *
- 	 * Deprecated, will be moved in {@link CtExecutable}, in order to follow the Java specification
+	 * Build a short representation of any element.
 	 */
-	@Deprecated
-	String getSignature();
+	String getShortRepresentation();
 
 	/**
 	 * Gets the position of this element in input source files
@@ -152,13 +146,14 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 			Class<? extends Annotation> annotationType);
 
 	/**
-	 * Returns true if this element is implicit and automatically added by the
-	 * Java compiler.
+	 * Returns true if this element is not present in the code (automatically added by the
+	 * Java compiler or inferred when the model is built).
+	 * Consequently, implicit elements are not pretty-printed and have no position.
 	 */
 	boolean isImplicit();
 
 	/**
-	 * Sets this element to be implicit (will not be printed).
+	 * Sets this element to be implicit.
 	 */
 	<E extends CtElement> E setImplicit(boolean b);
 

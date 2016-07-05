@@ -32,11 +32,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -231,23 +233,11 @@ public class TypeReferenceTest {
 		assertNotNull(genericType);
 		assertNotNull(genericType.getBoundingType());
 
-		// Deprecated.
-		CtTypeReference<?> extendsGeneric = genericType.getBounds().get(0);
+		CtTypeReference<?> extendsGeneric = genericType.getBoundingType();
 		assertNotNull(extendsGeneric);
 		assertEquals(1, extendsGeneric.getActualTypeArguments().size());
 
 		CtTypeParameterReference genericExtends = (CtTypeParameterReference) extendsGeneric.getActualTypeArguments().get(0);
-		assertNotNull(genericExtends);
-		assertNotNull(genericExtends.getBounds().get(0));
-
-		assertTrue(genericExtends.getBounds().get(0) instanceof CtCircularTypeReference);
-
-		// New.
-		extendsGeneric = genericType.getBoundingType();
-		assertNotNull(extendsGeneric);
-		assertEquals(1, extendsGeneric.getActualTypeArguments().size());
-
-		genericExtends = (CtTypeParameterReference) extendsGeneric.getActualTypeArguments().get(0);
 		assertNotNull(genericExtends);
 		assertNotNull(genericExtends.getBoundingType());
 
@@ -357,13 +347,6 @@ public class TypeReferenceTest {
 		assertTrue(second instanceof CtTypeParameterReference);
 		assertEquals("?", second.getSimpleName());
 
-		// Deprecated.
-		final List<CtTypeReference<?>> bounds = ((CtTypeParameterReference) second).getBounds();
-		assertEquals(1, bounds.size());
-		assertEquals("Tacos", bounds.get(0).getSimpleName());
-		assertEquals(1, bounds.get(0).getActualTypeArguments().size());
-		assertEquals("?", bounds.get(0).getActualTypeArguments().get(0).getSimpleName());
-
 		// New.
 		final CtTypeReference<?> bound = ((CtTypeParameterReference) second).getBoundingType();
 		assertEquals("Tacos", bound.getSimpleName());
@@ -447,7 +430,17 @@ public class TypeReferenceTest {
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("A");
 		final CtClass anonymousClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0).getAnonymousClass();
 		assertEquals("1", anonymousClass.getReference().getSimpleName());
-		assertEquals(7, aClass.getReferencedTypes().size());
+		Set<CtTypeReference<?>> referencedTypes = aClass.getReferencedTypes();
+		List<String> referencedTypeNames = referencedTypes.stream().map(Object::toString)
+				.collect(Collectors.toList());
+		assertEquals(7, referencedTypeNames.size());
+		assertTrue(referencedTypeNames.contains("A"));
+		assertTrue(referencedTypeNames.contains("example.B"));
+		assertTrue(referencedTypeNames.contains("java.lang.Runnable"));
+		assertTrue(referencedTypeNames.contains("java.lang.Override"));
+		assertTrue(referencedTypeNames.contains("java.lang.Object"));
+		assertTrue(referencedTypeNames.contains("A.1"));
+		assertTrue(referencedTypeNames.contains("void"));
 	}
 
 	@Test
@@ -483,19 +476,19 @@ public class TypeReferenceTest {
 		final CtTypeParameterReference reference = factory.Type().createTypeParameterReference("T");
 		reference.addBound(factory.Type().createReference(String.class));
 
-		assertEquals(1, reference.getBounds().size());
+		assertNotNull(reference.getBoundingType());
 
 		reference.setBounds(null);
 
-		assertEquals(0, reference.getBounds().size());
+		assertNull(reference.getBoundingType());
 
 		reference.addBound(factory.Type().createReference(String.class));
 
-		assertEquals(1, reference.getBounds().size());
+		assertNotNull(reference.getBoundingType());
 
 		reference.setBounds(new ArrayList<>());
 
-		assertEquals(0, reference.getBounds().size());
+		assertNull(reference.getBoundingType());
 	}
 
 	@Test(expected = SpoonException.class)

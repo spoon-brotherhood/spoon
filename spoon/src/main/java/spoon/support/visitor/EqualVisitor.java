@@ -78,6 +78,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -136,11 +137,6 @@ public class EqualVisitor extends CtScanner {
 	@Override
 	public void visitCtAnonymousExecutable(CtAnonymousExecutable e) {
 		scan(e.getBody());
-	}
-
-	@Override
-	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
-		printCtArrayAccess(arrayAccess);
 	}
 
 	@Override
@@ -584,8 +580,8 @@ public class EqualVisitor extends CtScanner {
 	@Override
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
 		write(ref.getQualifiedName());
-		if (ref.getBounds() != null && !ref.getBounds().isEmpty()) {
-			for (CtTypeReference<?> b : ref.getBounds()) {
+		if (ref.getBoundingType() instanceof CtIntersectionTypeReference) {
+			for (CtTypeReference<?> b : ref.getBoundingType().asCtIntersectionTypeReference().getBounds()) {
 				scan(b);
 				write(", ");
 			}

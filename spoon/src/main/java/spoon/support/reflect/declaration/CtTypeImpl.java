@@ -20,6 +20,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -68,7 +69,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	Set<CtMethod<?>> methods = emptySet();
 
-	private List<CtField<?>> fields = new ArrayList<>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
+	List<CtField<?>> fields = emptyList();
 
 	Set<CtType<?>> nestedTypes = emptySet();
 
@@ -82,6 +83,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	public <F, C extends CtType<T>> C addFieldAtTop(CtField<F> field) {
 		if (field == null) {
 			return (C) this;
+		}
+		if (this.fields == CtElementImpl.<CtField<?>>emptyList()) {
+			this.fields = new ArrayList<>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		if (!this.fields.contains(field)) {
 			field.setParent(this);
@@ -102,6 +106,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		if (field == null) {
 			return (C) this;
 		}
+		if (this.fields == CtElementImpl.<CtField<?>>emptyList()) {
+			this.fields = new ArrayList<>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
+		}
 		if (!this.fields.contains(field)) {
 			field.setParent(this);
 			this.fields.add(field);
@@ -113,6 +120,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <F, C extends CtType<T>> C addField(int index, CtField<F> field) {
+		if (this.fields == CtElementImpl.<CtField<?>>emptyList()) {
+			this.fields = new ArrayList<>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
+		}
 		if (!this.fields.contains(field)) {
 			field.setParent(this);
 			this.fields.add(index, field);
@@ -124,6 +134,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtType<T>> C setFields(List<CtField<?>> fields) {
+		if (fields == null || fields.isEmpty()) {
+			this.fields = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		this.fields.clear();
 		for (CtField<?> field : fields) {
 			addField(field);
@@ -182,6 +196,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtType<T>> C setNestedTypes(Set<CtType<?>> nestedTypes) {
+		if (nestedTypes == null || nestedTypes.isEmpty()) {
+			this.nestedTypes = CtElementImpl.emptySet();
+			return (C) this;
+		}
 		if (this.nestedTypes == CtElementImpl.<CtType<?>>emptySet()) {
 			this.nestedTypes = new TreeSet<>();
 		}
@@ -655,15 +673,16 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public String getQualifiedName() {
 		if (isTopLevel()) {
-			if ((getPackage() != null) && !getPackage().getSimpleName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+			if (getPackage() != null && !getPackage().isUnnamedPackage()) {
 				return getPackage().getQualifiedName() + "." + getSimpleName();
+			} else {
+				return getSimpleName();
 			}
+		} else if (getDeclaringType() != null) {
+			return getDeclaringType().getQualifiedName() + INNERTTYPE_SEPARATOR + getSimpleName();
+		} else {
 			return getSimpleName();
 		}
-		if (getDeclaringType() != null) {
-			return getDeclaringType().getQualifiedName() + INNERTTYPE_SEPARATOR + getSimpleName();
-		}
-		return getSimpleName();
 	}
 
 	@Override
@@ -673,6 +692,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtFormalTypeDeclarer> C setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
+		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
+			this.formalTypeParameters = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		if (this.formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
 			this.formalTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -685,6 +708,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods) {
+		if (methods == null || methods.isEmpty()) {
+			this.methods = CtElementImpl.emptySet();
+			return (C) this;
+		}
 		this.methods.clear();
 		for (CtMethod<?> meth : methods) {
 			addMethod(meth);
@@ -694,6 +721,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
+		if (interfaces == null || interfaces.isEmpty()) {
+			this.interfaces = CtElementImpl.emptySet();
+			return (C) this;
+		}
 		if (this.interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			this.interfaces = new TreeSet<>();
 		}
@@ -776,5 +807,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public CtType<T> clone() {
 		return (CtType<T>) super.clone();
+	}
+
+	@Override public int compareTo(CtElement o) {
+		if (!(o instanceof CtType)) {
+			return super.compareTo(o);
+		}
+		return getQualifiedName().compareTo(((CtType) o).getQualifiedName());
 	}
 }

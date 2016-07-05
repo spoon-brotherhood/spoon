@@ -31,6 +31,7 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
+import spoon.support.visitor.SignaturePrinter;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -184,7 +185,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public <C extends CtExecutableReference<T>> C setParameters(List<CtTypeReference<?>> parameters) {
-		if (parameters.isEmpty()) {
+		if (parameters == null || parameters.isEmpty()) {
 			this.parameters = CtElementImpl.emptyList();
 			return (C) this;
 		}
@@ -242,8 +243,11 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtActualTypeContainer> C setActualTypeArguments(
-			List<CtTypeReference<?>> actualTypeArguments) {
+	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
+		if (actualTypeArguments == null || actualTypeArguments.isEmpty()) {
+			this.actualTypeArguments = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.actualTypeArguments = new ArrayList<>();
 		}
@@ -425,6 +429,13 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			CtTypeReference<?> actualTypeArgument) {
 		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>emptyList()
 				&& actualTypeArguments.remove(actualTypeArgument);
+	}
+
+	@Override
+	public String getSignature() {
+		final SignaturePrinter pr = new SignaturePrinter();
+		pr.scan(this);
+		return pr.getSignature();
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.visitor.SignaturePrinter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +70,10 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public <T extends CtExecutable<R>> T setParameters(List<CtParameter<?>> parameters) {
+		if (parameters == null || parameters.isEmpty()) {
+			this.parameters = CtElementImpl.emptyList();
+			return (T) this;
+		}
 		if (this.parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			this.parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -104,6 +109,10 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public <T extends CtExecutable<R>> T setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
+		if (thrownTypes == null || thrownTypes.isEmpty()) {
+			this.thrownTypes = CtElementImpl.emptySet();
+			return (T) this;
+		}
 		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			this.thrownTypes = new TreeSet<>();
 		}
@@ -130,6 +139,13 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	@Override
 	public boolean removeThrownType(CtTypeReference<? extends Throwable> throwType) {
 		return thrownTypes.remove(throwType);
+	}
+
+	@Override
+	public String getSignature() {
+		final SignaturePrinter pr = new SignaturePrinter();
+		pr.scan(this);
+		return pr.getSignature();
 	}
 
 	@Override

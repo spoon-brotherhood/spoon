@@ -14,14 +14,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.declaration;
+package spoon.generating.clone;
+
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.CtInheritanceScanner;
+
 
 /**
- * This abstract element defines a declaration that accepts formal type
- * parameters (aka generics).
+ * Used to set all data in the cloned element.
  *
- * @see CtFormalTypeDeclarer
+ * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
  */
-@Deprecated
-public interface CtGenericElement extends CtFormalTypeDeclarer {
+class CloneBuilderTemplate extends CtInheritanceScanner {
+	public static <T extends CtElement> T build(CtElement element, CtElement other) {
+		return build(new CloneBuilderTemplate(), element, other);
+	}
+
+	public static <T extends CtElement> T build(CloneBuilderTemplate builder, CtElement element, CtElement other) {
+		builder.setOther(other);
+		builder.scan(element);
+		return (T) builder.other;
+	}
+
+	private CtElement other;
+
+	public void setOther(CtElement other) {
+		this.other = other;
+	}
 }

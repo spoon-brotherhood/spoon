@@ -14,14 +14,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.reference;
+package spoon.generating.clone;
 
-/**
- * This interface defines a reference to
- * {@link spoon.reflect.declaration.CtGenericElement}.
- *
- * @see CtActualTypeContainer
- */
-@Deprecated
-public interface CtGenericElementReference extends CtActualTypeContainer {
+import spoon.reflect.declaration.CtElement;
+
+public class SetterTemplateMatcher {
+	private boolean isElement;
+
+	public <E extends CtElement> E setElement(boolean isElement) {
+		this.isElement = isElement;
+		return (E) this;
+	}
 }

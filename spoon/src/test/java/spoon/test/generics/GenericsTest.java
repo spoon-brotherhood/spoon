@@ -69,9 +69,6 @@ public class GenericsTest {
 		assertEquals("Tree", type.getSimpleName());
 		CtTypeParameterReference generic = type.getFormalTypeParameters().get(0);
 		assertEquals("V", generic.getSimpleName());
-		// Deprecated.
-		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", generic.getBounds().toString());
-		// New.
 		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", generic.getBoundingType().asCtIntersectionTypeReference().getBounds().toString());
 
 		CtMethod<?> node5 = type.getElements(
@@ -125,10 +122,8 @@ public class GenericsTest {
 
 	@Test
 	public void testModelBuildingSimilarSignatureMethods() throws Exception {
-		CtClass<?> type = build("spoon.test.generics",
-				"SimilarSignatureMethodes");
-		List<CtNamedElement> methods = type
-				.getElements(new NameFilter<CtNamedElement>("methode"));
+		CtClass<?> type = build("spoon.test.generics", "SimilarSignatureMethodes");
+		List<CtNamedElement> methods = type.getElements(new NameFilter<CtNamedElement>("methode"));
 		assertEquals(2, methods.size());
 		CtTypeParameterReference generic = ((CtMethod<?>) methods.get(0)).getFormalTypeParameters().get(0);
 		assertEquals("E", generic.getSimpleName());

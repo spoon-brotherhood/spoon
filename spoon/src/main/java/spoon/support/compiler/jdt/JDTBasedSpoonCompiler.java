@@ -442,7 +442,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		for (int i = 0; i < units.length; i++) {
 			CompilationUnitDeclaration unit = units[i];
 			unit.traverse(builder, unit.scope);
-			if (getFactory().getEnvironment().isGenerateJavadoc() || getFactory().getEnvironment().isCommentsEnabled()) {
+			if (getFactory().getEnvironment().isCommentsEnabled()) {
 				new JDTCommentBuilder(unit, factory).build();
 			}
 		}
@@ -493,7 +493,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		for (int i = 0; i < units.length; i++) {
 			CompilationUnitDeclaration unit = units[i];
 			unit.traverse(builder, unit.scope);
-			if (getFactory().getEnvironment().isGenerateJavadoc() || getFactory().getEnvironment().isCommentsEnabled()) {
+			if (getFactory().getEnvironment().isCommentsEnabled()) {
 				new JDTCommentBuilder(unit, factory).build();
 			}
 		}
@@ -550,7 +550,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 			// create package directory
 			File packageDir;
-			if (pack.getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+			if (pack.isUnnamedPackage()) {
 				packageDir = new File(outputDirectory.getAbsolutePath());
 			} else {
 				// Create current package directory

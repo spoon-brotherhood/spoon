@@ -29,7 +29,7 @@ import java.util.List;
  * {@link spoon.reflect.declaration.CtMethod} or a
  * {@link spoon.reflect.declaration.CtConstructor}.
  */
-public interface CtExecutableReference<T> extends CtReference, CtGenericElementReference {
+public interface CtExecutableReference<T> extends CtReference, CtActualTypeContainer {
 
 	String CONSTRUCTOR_NAME = "<init>";
 
@@ -138,6 +138,11 @@ public interface CtExecutableReference<T> extends CtReference, CtGenericElementR
 	 * Tells if the referenced executable is final.
 	 */
 	boolean isFinal();
+
+	/**
+	 * Gets the signature of this method or constructor as specified by chapter "8.4.2 Method Signature" of the Java specification
+	 */
+	String getSignature();
 
 	/**
 	 * Replaces an executable reference by another one.

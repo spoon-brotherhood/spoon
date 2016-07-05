@@ -66,7 +66,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <B extends T, C extends CtExecutable<T>> C setBody(CtBlock<B> body) {
-		if (expression != null) {
+		if (expression != null && body != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
 		}
 		if (body != null) {
@@ -83,6 +83,10 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtExecutable<T>> C setParameters(List<CtParameter<?>> params) {
+		if (params == null || params.isEmpty()) {
+			this.parameters = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		if (this.parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			this.parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -119,6 +123,10 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtExecutable<T>> C setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
+		if (thrownTypes == null || thrownTypes.isEmpty()) {
+			this.thrownTypes = CtElementImpl.emptySet();
+			return (C) this;
+		}
 		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			this.thrownTypes = new TreeSet<>();
 		}
@@ -148,6 +156,11 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
+	public String getSignature() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public CtExecutableReference<T> getReference() {
 		return getFactory().Executable().createReference(this);
 	}
@@ -159,7 +172,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtLambda<T>> C setExpression(CtExpression<T> expression) {
-		if (body != null) {
+		if (body != null && expression != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
 		}
 		if (expression != null) {

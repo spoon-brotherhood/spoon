@@ -16,22 +16,12 @@
  */
 package spoon.processing;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Level;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -40,6 +30,14 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.processing.XmlProcessorProperties;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A processor to add/replace/override/remove annotations described in an XML
@@ -115,7 +113,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	 * @param typeExpression
 	 * 		and expression to match the type against.
 	 * @return true if the type matches the expression
-	 * @see CtElement#getSignature()
+	 * @see CtType#getQualifiedName()
 	 */
 	protected boolean isTypeMatching(CtType<?> type, String typeExpression) {
 		return java.util.regex.Pattern.matches(typeExpression, type.getQualifiedName());
@@ -130,7 +128,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	 * @param executableExpression
 	 * 		and expression to match the executable against.
 	 * @return true if the executable matches the expression
-	 * @see CtElement#getSignature()
+	 * @see CtExecutable#getSignature()
 	 */
 	protected boolean isExecutableMatching(CtExecutable<?> executable, String executableExpression) {
 		String signature = executable.getSignature();
@@ -146,11 +144,10 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	 * @param fieldExpression
 	 * 		and expression to match the field against.
 	 * @return true if the field matches the expression
-	 * @see CtElement#getSignature()
+	 * @see CtElement#getShortRepresentation()
 	 */
 	protected boolean isFieldMatching(CtField<?> field, String fieldExpression) {
-		String signature = field.getSignature();
-		return java.util.regex.Pattern.matches(fieldExpression, signature);
+		return java.util.regex.Pattern.matches(fieldExpression, field.getShortRepresentation());
 	}
 
 	public final void process() {

@@ -14,48 +14,22 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor;
+package spoon.generating.clone;
 
 import spoon.reflect.declaration.CtElement;
-
-import java.util.Stack;
+import spoon.reflect.visitor.CtScanner;
+import spoon.support.visitor.clone.CloneBuilder;
 
 /**
- * This class defines a scanner that maintains a scanning stack for contextual
- * awareness.
+ * Used to clone a given element.
  *
- * Deprecated, see {@link CtDequeScanner}.
+ * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
  */
-@Deprecated
-public class CtStackScanner extends CtScanner {
+class CloneVisitorTemplate extends CtScanner {
+	private final CloneBuilder builder = new CloneBuilder();
+	private CtElement other;
 
-	/**
-	 * Default constructor.
-	 */
-	public CtStackScanner() {
-	}
-
-	/**
-	 * The stack of elements.
-	 */
-	protected Stack<CtElement> elementStack = new Stack<>();
-
-	/**
-	 * Pops the element.
-	 */
-	protected void exit(CtElement e) {
-		CtElement ret = elementStack.pop();
-		if (ret != e) {
-			throw new RuntimeException("Unconsitant Stack");
-		}
-		super.exit(e);
-	}
-
-	/**
-	 * Pushes the element.
-	 */
-	protected void enter(CtElement e) {
-		elementStack.push(e);
-		super.enter(e);
+	public <T extends CtElement> T getClone() {
+		return (T) other;
 	}
 }
