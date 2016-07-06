@@ -14,22 +14,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating.clone;
+package spoon2.clone;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.CtScanner;
-import spoon.support.visitor.clone.CloneBuilder;
+import spoon.template.TemplateParameter;
 
-/**
- * Used to clone a given element.
- *
- * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
- */
-class CloneVisitorTemplate extends CtScanner {
-	private final CloneBuilder builder = new CloneBuilder();
-	private CtElement other;
+public class GetterTemplateMatcher {
+	private TemplateParameter<CtElement> _element_;
 
-	public <T extends CtElement> T getClone() {
-		return (T) other;
+	public CtElement getElement() {
+		return _element_.S();
 	}
 }

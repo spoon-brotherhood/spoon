@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating;
+package spoon2.clone;
 
 import spoon.SpoonException;
 import spoon.processing.AbstractManualProcessor;
@@ -49,10 +49,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.visitor.clone.CloneBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,11 +60,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static spoon2.RefactoringHelper.renameReferences;
+
 public class CloneVisitorGenerator extends AbstractManualProcessor {
 	private static final String TARGET_CLONE_PACKAGE = "spoon.support.visitor.clone";
 	private static final String TARGET_CLONE_TYPE = "CloneVisitor";
 	private static final String TARGET_BUILDER_CLONE_TYPE = "CloneBuilder";
-	private static final String GENERATING_CLONE_PACKAGE = "spoon.generating.clone";
+	private static final String GENERATING_CLONE_PACKAGE = "spoon2.clone";
 	private static final String GENERATING_CLONE = GENERATING_CLONE_PACKAGE + ".CloneVisitorTemplate";
 	private static final String GENERATING_BUILDER_CLONE = GENERATING_CLONE_PACKAGE + ".CloneBuilderTemplate";
 
@@ -168,8 +168,8 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 *
 			 * @param elementAccess <code>element</code>.
 			 */
-			private CtInvocation<CloneBuilder> createCloneBuilderInvocation(CtVariableAccess<CtElement> elementAccess) {
-				final CtExecutableReference<CloneBuilder> buildExecRef = factory.Executable().createReference("CloneBuilder CtElement#build()");
+			private CtInvocation<Object> createCloneBuilderInvocation(CtVariableAccess<CtElement> elementAccess) {
+				final CtExecutableReference<Object> buildExecRef = factory.Executable().createReference("CloneBuilder CtElement#build()");
 				return factory.Code().createInvocation(cloneBuilderType, buildExecRef, builderFieldAccess, elementAccess, createFactoryInvocation(elementAccess.clone()));
 			}
 
@@ -513,21 +513,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 		target.setSimpleName(TARGET_CLONE_TYPE);
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
-		final List<CtTypeReference> references = target.getReferences(new ReferenceFilter<CtTypeReference>() {
-			@Override
-			public boolean matches(CtTypeReference reference) {
-				return reference != null && GENERATING_CLONE.equals(reference.getQualifiedName());
-			}
-
-			@Override
-			public Class<CtTypeReference> getType() {
-				return CtTypeReference.class;
-			}
-		});
-		for (CtTypeReference reference : references) {
-			reference.setSimpleName(TARGET_CLONE_TYPE);
-			reference.setPackage(aPackage.getReference());
-		}
+		renameReferences(target, "CloneVisitor", aPackage.getReference(), GENERATING_CLONE);
 		return target;
 	}
 
@@ -537,21 +523,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 		target.setSimpleName(TARGET_BUILDER_CLONE_TYPE);
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
-		final List<CtTypeReference> references = target.getReferences(new ReferenceFilter<CtTypeReference>() {
-			@Override
-			public boolean matches(CtTypeReference reference) {
-				return reference != null && GENERATING_BUILDER_CLONE.equals(reference.getQualifiedName());
-			}
-
-			@Override
-			public Class<CtTypeReference> getType() {
-				return CtTypeReference.class;
-			}
-		});
-		for (CtTypeReference reference : references) {
-			reference.setSimpleName(TARGET_BUILDER_CLONE_TYPE);
-			reference.setPackage(aPackage.getReference());
-		}
+		renameReferences(getFactory(), "CloneBuilder", aPackage.getReference(), GENERATING_BUILDER_CLONE);
 		return target;
 	}
 }

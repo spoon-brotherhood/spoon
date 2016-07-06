@@ -17,7 +17,6 @@
 package spoon.support.visitor.equals;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.support.visitor.clone.CloneVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +28,7 @@ import java.util.TreeSet;
 
 public final class CloneHelper {
 	public static <T extends CtElement> T clone(T element) {
-		final CloneVisitor cloneVisitor = new CloneVisitor();
+		final spoon.support.visitor.clone.CloneVisitor cloneVisitor = new spoon.support.visitor.clone.CloneVisitor();
 		cloneVisitor.scan(element);
 		return cloneVisitor.getClone();
 	}
